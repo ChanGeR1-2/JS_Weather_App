@@ -39,7 +39,8 @@ const handlers = (() => {
     }
 
     return {
-        registerHandlers
+        registerHandlers,
+        load,
     };
 })();
 
