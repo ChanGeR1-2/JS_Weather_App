@@ -7,3 +7,4 @@ navigator.geolocation.getCurrentPosition( (position) => {
 }, () => {
     handlers.load();
 });
+

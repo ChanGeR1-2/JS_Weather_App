@@ -92,17 +92,59 @@ const dom = (() => {
         container.appendChild(statsGrid);
     }
 
-    /*
+
     function renderHourly(todayHours, tomorrowHours, currentTime) {
         const currentHour = currentTime.getHours();
+
+        const weatherContainer = document.createElement('div');
+        weatherContainer.className = 'hourly-container';
+
         let count = 0;
-        while (count < 24) {
-            for (const hour of todayHours) {
-                const time = parseInt(hour.dateTime.slice(0, 2));
+
+        for (const hour of todayHours) {
+            const time = parseInt(hour.datetime.slice(0, 2));
+            if (currentHour > time) {
+                continue;
             }
+            addCell(hour);
+            count++;
         }
+
+        let i = 0;
+        while (count < 24) {
+            const hour = tomorrowHours[i++];
+            addCell(hour);
+            count++;
+        }
+
+        function addCell(hour) {
+            const weatherCell = document.createElement('div');
+            weatherCell.className = 'hourly-weather-cell';
+
+            const formattedTime = hour.datetime.slice(0, 5);
+            const timeSpan = document.createElement('span');
+            timeSpan.textContent = formattedTime;
+            timeSpan.className = 'light-grey';
+            timeSpan.style.marginBottom = '20px';
+
+            const weatherImage = new Image();
+            weatherImage.className = 'small-weather-icon';
+            weatherImage.src = images.get(hour.icon);
+            weatherImage.alt = 'weather-image';
+
+            const degreeSpan = document.createElement('span');
+            degreeSpan.textContent = `${Math.round(hour.temp)}\xB0${formatTempUnits()}`;
+
+            weatherCell.appendChild(timeSpan);
+            weatherCell.appendChild(weatherImage);
+            weatherCell.appendChild(degreeSpan);
+
+            weatherContainer.appendChild(weatherCell)
+        }
+
+        container.appendChild(weatherContainer);
     }
-    */
+
     function formatTempUnits() {
         switch (units) {
             case 'metric':
@@ -276,7 +318,7 @@ const dom = (() => {
         } else {
             units = unit;
             renderToday(data.days[0], data.currentTime, data.location, data.description);
-            // renderHourly(data.days[0].hours, data.days[1].hours, data.currentTime);
+            renderHourly(data.days[0].hours, data.days[1].hours, data.currentTime);
             renderWeekly(data.days.splice(1), data.days.length - 1);
         }
     }
