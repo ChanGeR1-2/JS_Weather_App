@@ -2,7 +2,7 @@ const api = (locales => {
     const apiKey = 'JSN83SWW77989S6ZE43SESMX2';
 
     async function getLocationData(location, unit = 'metric') {
-        const request = new Request(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?unitGroup=${unit}&key=${apiKey}&contentType=json`, {
+        const request = new Request(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?unitGroup=${unit}&key=${apiKey}&contentType=json&lang=en`, {
             method: 'GET',
             headers: {},
         });
