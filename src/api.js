@@ -1,7 +1,17 @@
 const api = (locales => {
     const apiKey = 'JSN83SWW77989S6ZE43SESMX2';
 
-    async function getLocationData(location, unit = 'metric') {
+    async function getLocationData(latitude, longitude, location, unit = 'metric') {
+        if (latitude && longitude) {
+            const locationRequest = new Request(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
+            try {
+                const locationResponse = await fetch(locationRequest);
+                const locationData = await locationResponse.json();
+                location = `${locationData.city}, ${locationData.countryCode}`;
+            } catch (error) {
+                return {code: error.name, message: error.message};
+            }
+        }
         const request = new Request(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?unitGroup=${unit}&key=${apiKey}&contentType=json&lang=en`, {
             method: 'GET',
             headers: {},

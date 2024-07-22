@@ -2,4 +2,8 @@ import './style.css';
 import handlers from "./handlers";
 
 handlers.registerHandlers();
-handlers.load();
+navigator.geolocation.getCurrentPosition( (position) => {
+    handlers.load(`${position.coords.latitude}`, `${position.coords.longitude}`, undefined);
+}, () => {
+    handlers.load();
+});
