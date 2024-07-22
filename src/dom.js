@@ -16,7 +16,7 @@ const dom = (() => {
 
         const weatherDiv = document.createElement('div');
 
-        weatherDiv.className = 'flex';
+        weatherDiv.className = 'weather-div';
         const tempContainer = document.createElement('div');
         const weatherImage = new Image();
         weatherImage.src = images.get(today.icon);
@@ -165,7 +165,18 @@ const dom = (() => {
             dayContainer.className = 'day';
 
             const dayName = document.createElement('div');
-            dayName.textContent = getDayOfWeek(day.datetime);
+
+            let mediaQueryList = window.matchMedia("(max-width: 600px)");
+
+            if (mediaQueryList.matches) {
+                dayName.textContent = getDayOfWeek(day.datetime, false);
+            } else {
+                dayName.textContent = getDayOfWeek(day.datetime, true);
+            }
+
+            mediaQueryList.addEventListener('change', () => {
+                dayName.textContent = dayName.textContent.length > 3 ? getDayOfWeek(day.datetime, false) : getDayOfWeek(day.datetime, true);
+            });
 
             const miniWeatherContainer = document.createElement('div');
             miniWeatherContainer.className = 'mini-weather-container';
@@ -225,22 +236,22 @@ const dom = (() => {
         }
     }
 
-    function getDayOfWeek(date) {
+    function getDayOfWeek(date, long) {
         switch (date.getDay()) {
             case 0:
-                return 'Sunday';
+                return long ? 'Sunday' : 'Sun';
             case 1:
-                return 'Monday';
+                return long ? 'Monday' : 'Mon';
             case 2:
-                return 'Tuesday';
+                return long ? 'Tuesday' : 'Tue';
             case 3:
-                return 'Wednesday';
+                return long ? 'Wednesday' : 'Wed';
             case 4:
-                return 'Thursday';
+                return long ? 'Thursday' : 'Thu';
             case 5:
-                return 'Friday';
+                return long ? 'Friday' : 'Fri';
             case 6:
-                return 'Saturday';
+                return long ? 'Saturday' : 'Sat';
         }
     }
 

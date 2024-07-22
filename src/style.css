@@ -155,6 +155,7 @@ header {
     flex-direction: column;
     align-items: center;
     gap: 2rem;
+    text-align: center;
 }
 
 .large-weather-img {
@@ -170,16 +171,16 @@ header {
     font-size: var(--large-heading-text);
 }
 
-.flex {
+.weather-div {
     display: flex;
     gap: 24px;
 }
+
 .flex-column {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
-
 .main-content .light-grey {
     color: var(--transparent-white);
 }
@@ -187,7 +188,7 @@ header {
 .stats-grid {
     display: grid;
     grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
-    gap: 24px;
+    gap: 5%;
     text-align: center;
 }
 
@@ -252,6 +253,23 @@ header {
     grid-template-columns: 2fr 1fr 1fr 1fr;
     gap: 20px;
     padding: 10px;
+}
+
+@media (max-width: 600px) {
+    .weekly > div {
+        grid-template-columns: 1fr 2fr 1fr 1fr;
+        gap: 5px;
+    }
+    .weather-div {
+        gap: 0;
+        flex-direction: column;
+    }
+    .body-wrapper {
+       display: block;
+    }
+    .stats-grid {
+        grid-template: 1fr 1fr 1fr 1fr / 1fr 1fr;
+    }
 }
 
 .weekly > div:not(:last-child) {
