@@ -6,13 +6,14 @@ const handlers = (() => {
     const topNav = document.querySelector('.main-nav');
 
     async function load(input = "London", units = "metric") {
+        dom.load();
         const data = await api.getLocationData(input, units);
-        dom.renderContent(data)
+        dom.renderContent(data, units);
     }
 
-    function clickHandler() {
-        let input;
-        let units = 'uk';
+    function navHandler() {
+        let input = 'London';
+        let units = 'metric';
         topNav.addEventListener('click', async (e) => {
             const target = e.target;
             switch (target.id) {
@@ -22,6 +23,12 @@ const handlers = (() => {
                     await load(input, units);
                     break;
             }
+        });
+        document.querySelectorAll('input[name="unit"]').forEach((element) => {
+            element.addEventListener('change', async (e) => {
+                units = e.target.value;
+                await load(input, units);
+            });
         });
     }
 
@@ -34,7 +41,7 @@ const handlers = (() => {
     }
 
     function registerHandlers() {
-        clickHandler();
+        navHandler();
         keyHandler();
     }
 

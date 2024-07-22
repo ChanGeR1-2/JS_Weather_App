@@ -22,7 +22,7 @@ const api = (locales => {
         }
     }
 
-    async function processData(data) {
+    function processData(data) {
         const currentTime = new Date(new Date().toLocaleString("en-US", {timeZone: `${data.timezone}`}));
         const location = data.resolvedAddress;
         const description = data.description;

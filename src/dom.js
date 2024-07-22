@@ -2,6 +2,7 @@ import images from './images'
 
 const dom = (() => {
     const container = document.querySelector('.main-content');
+    let units;
 
     function renderToday(today, currentTime, location, description) {
         const headingDiv = document.createElement('div');
@@ -23,7 +24,7 @@ const dom = (() => {
         weatherImage.className = 'large-weather-img';
         const text = document.createElement('span');
         text.className = 'large-temp-text';
-        text.textContent = `${today.temp}\xB0C`;
+        text.textContent = `${today.temp}\xB0${formatTempUnits()}`;
         tempContainer.appendChild(weatherImage);
         tempContainer.appendChild(text);
 
@@ -34,7 +35,7 @@ const dom = (() => {
         smallHeader.textContent = `${today.conditions}`;
         const feelsLikeText = document.createElement('span');
         feelsLikeText.className = 'light-grey small-text';
-        feelsLikeText.textContent = `Feels like ${today.feelslike}\xB0C`;
+        feelsLikeText.textContent = `Feels like ${today.feelslike}\xB0${formatTempUnits()}`;
         descriptionDiv.appendChild(smallHeader);
         descriptionDiv.appendChild(feelsLikeText);
 
@@ -55,25 +56,34 @@ const dom = (() => {
 
             wrapper.appendChild(nameTag);
 
+            const infoBoxWrapper = document.createElement('div');
+            infoBoxWrapper.className = 'info-box-wrapper';
+
             const infoBox = document.createElement('span');
-            infoBox.className = 'medium-text';
+            infoBox.className = 'medium-text info-box';
             infoBox.textContent = `${val}${getUnits(key) ? getUnits(key) : ''}`;
+
+            if (key === 'uvindex') {
+                infoBox.classList.add('circle');
+                infoBox.style.backgroundColor = `${getUvColour(val)}`;
+                infoBox.style.width = '35px';
+                infoBox.style.height = '35px';
+                infoBox.style.fontWeight = 'bold';
+            }
+
             if (key === 'windspeed') {
-                const windContainer = document.createElement('div');
-                windContainer.className = 'wind-container';
                 const windArrow = new Image();
                 windArrow.src = images.get('arrow-up-thin');
                 windArrow.alt = 'wind direction';
                 windArrow.style.transform = `rotate(${today.winddir}deg)`;
                 windArrow.className = 'wind-arrow';
 
-                windContainer.appendChild(windArrow);
-                windContainer.appendChild(infoBox);
-
-                wrapper.appendChild(windContainer);
-            } else {
-                wrapper.appendChild(infoBox);
+                infoBoxWrapper.appendChild(windArrow);
             }
+
+            infoBoxWrapper.appendChild(infoBox);
+            wrapper.appendChild(infoBoxWrapper);
+
             statsGrid.appendChild(wrapper);
         }
 
@@ -82,11 +92,21 @@ const dom = (() => {
         container.appendChild(statsGrid);
     }
 
+    function formatTempUnits() {
+        switch (units) {
+            case 'metric':
+            case 'uk':
+                return 'C';
+            case 'us':
+                return 'F';
+        }
+    }
+
     function getUnits(name) {
         let result;
         switch (name) {
             case 'windspeed':
-                result = 'km/h';
+                result = units === 'metric' ? 'km/h' : 'mph';
                 break;
             case 'humidity':
             case 'cloudcover':
@@ -94,7 +114,7 @@ const dom = (() => {
                 result = '%';
                 break;
             case 'visibility':
-                result = 'km';
+                result = units === 'metric' ? 'km' : 'mi';
                 break;
         }
         return result;
@@ -155,13 +175,13 @@ const dom = (() => {
             weatherImage.alt = 'weather-image';
             weatherImage.className = 'mini-weather-icon';
             const tempText = document.createElement('span');
-            tempText.textContent = `${day.tempMax}\xB0C`;
+            tempText.textContent = `${day.tempMax}\xB0${formatTempUnits()}`;
 
             miniWeatherContainer.appendChild(weatherImage);
             miniWeatherContainer.appendChild(tempText);
 
             const minTemp = document.createElement('span');
-            minTemp.textContent = `${day.tempMin}\xB0C`;
+            minTemp.textContent = `${day.tempMin}\xB0${formatTempUnits()}`;
             minTemp.className = 'light-grey';
 
             const windContainer = document.createElement('div');
@@ -191,6 +211,20 @@ const dom = (() => {
         container.appendChild(wrapper);
     }
 
+    function getUvColour(uvindex) {
+        if (uvindex >= 11) {
+            return 'violet';
+        } else if (uvindex >= 8) {
+            return 'red';
+        } else if (uvindex >= 6) {
+            return 'orange';
+        } else if (uvindex >= 3) {
+            return 'gold';
+        } else {
+            return 'green';
+        }
+    }
+
     function getDayOfWeek(date) {
         switch (date.getDay()) {
             case 0:
@@ -210,20 +244,31 @@ const dom = (() => {
         }
     }
 
-    function renderContent(data) {
+    function renderContent(data, unit) {
+        while (container.firstChild) {
+            container.removeChild(container.lastChild);
+        }
         if (data.error) {
             alert(data.error);
         } else {
-            while (container.firstChild) {
-                container.removeChild(container.lastChild);
-            }
+            units = unit;
             renderToday(data.days[0], data.currentTime, data.location, data.description);
             renderWeekly(data.days.splice(1), data.days.length - 1);
         }
     }
 
+    function load() {
+        while (container.firstChild) {
+            container.removeChild(container.lastChild);
+        }
+        const loadingWheel = document.createElement('span');
+        loadingWheel.className = 'loader';
+        container.appendChild(loadingWheel);
+    }
+
     return {
         renderContent,
+        load,
     }
 })();
 
