@@ -54,7 +54,7 @@ body {
 
 .body-wrapper {
     display: grid;
-    grid-template: 2fr 10fr 1fr / 1fr 6fr 1fr;
+    grid-template: 2fr 14fr 1fr / 1fr 6fr 1fr;
     grid-template-areas:
             ". header ."
     ". main-content ."

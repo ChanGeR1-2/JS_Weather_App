@@ -92,6 +92,17 @@ const dom = (() => {
         container.appendChild(statsGrid);
     }
 
+    /*
+    function renderHourly(todayHours, tomorrowHours, currentTime) {
+        const currentHour = currentTime.getHours();
+        let count = 0;
+        while (count < 24) {
+            for (const hour of todayHours) {
+                const time = parseInt(hour.dateTime.slice(0, 2));
+            }
+        }
+    }
+    */
     function formatTempUnits() {
         switch (units) {
             case 'metric':
@@ -218,6 +229,7 @@ const dom = (() => {
             weekly.appendChild(dayContainer);
         }
 
+        wrapper.appendChild(heading);
         wrapper.appendChild(weekly);
         container.appendChild(wrapper);
     }
@@ -264,6 +276,7 @@ const dom = (() => {
         } else {
             units = unit;
             renderToday(data.days[0], data.currentTime, data.location, data.description);
+            // renderHourly(data.days[0].hours, data.days[1].hours, data.currentTime);
             renderWeekly(data.days.splice(1), data.days.length - 1);
         }
     }

@@ -1,5 +1,6 @@
 const api = (locales => {
     const apiKey = 'JSN83SWW77989S6ZE43SESMX2';
+    let currentLocation;
 
     async function getLocationData(latitude, longitude, location, unit = 'metric') {
         if (latitude && longitude) {
@@ -12,6 +13,7 @@ const api = (locales => {
                 return {code: error.name, message: error.message};
             }
         }
+        currentLocation = location;
         const request = new Request(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?unitGroup=${unit}&key=${apiKey}&contentType=json&lang=en`, {
             method: 'GET',
             headers: {},
@@ -57,11 +59,11 @@ const api = (locales => {
                 precipprob: Math.round(todayData.precipprob),
                 sunrise: todayData.sunrise.slice(0, -3),
                 sunset: todayData.sunset.slice(0, -3),
-            }
+            },
+            hours: todayData.hours,
         };
 
         for (let i = 1; i <= 7; i++) {
-
             const dayData = daysData[i];
             days[i] = {
                 datetime: new Date(dayData.datetime),
@@ -71,6 +73,9 @@ const api = (locales => {
                 windspeed: Math.round(dayData.windspeed),
                 winddir: Math.round(dayData.winddir),
             };
+            if (i === 1) {
+                days[i].hours = dayData.hours;
+            }
         }
         return {
             currentTime,
@@ -80,8 +85,13 @@ const api = (locales => {
         };
     }
 
+    function getCurrentLocation() {
+        return currentLocation;
+    }
+
     return {
         getLocationData,
+        getCurrentLocation
     }
 })();
 
