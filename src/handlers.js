@@ -6,9 +6,9 @@ const handlers = (() => {
     const topNav = document.querySelector('.main-nav');
     let currentLocation = 'Edinburgh';
 
-    async function load(latitude, longitude, input = 'Edinburgh', units = "metric") {
+    async function load(options = {location: 'Edinburgh'}, units = "metric") {
         dom.load();
-        const data = await api.getLocationData(latitude, longitude, input, units);
+        const data = await api.getLocationData(options, units);
         currentLocation = api.getCurrentLocation();
         dom.renderContent(data, units);
     }
@@ -21,14 +21,14 @@ const handlers = (() => {
                 case 'search':
                     currentLocation = searchInput.value;
                     searchInput.value = '';
-                    await load(undefined, undefined, currentLocation, units);
+                    await load({location: currentLocation}, units);
                     break;
             }
         });
         document.querySelectorAll('input[name="unit"]').forEach((element) => {
             element.addEventListener('change', async (e) => {
                 units = e.target.value;
-                await load(undefined, undefined, currentLocation, units);
+                await load({location: currentLocation}, units);
             });
         });
     }
@@ -41,14 +41,24 @@ const handlers = (() => {
         });
     }
 
+    function loadHandler() {
+        window.addEventListener('load', async () => {
+            navigator.geolocation.getCurrentPosition( (position) => {
+                load({latitude: `${position.coords.latitude}`, longitude: `${position.coords.longitude}`});
+            }, () => {
+                load();
+            });
+        });
+    }
+
     function registerHandlers() {
         navHandler();
         keyHandler();
+        loadHandler();
     }
 
     return {
         registerHandlers,
-        load,
     };
 })();
 

@@ -2,19 +2,19 @@ const api = (locales => {
     const apiKey = 'JSN83SWW77989S6ZE43SESMX2';
     let currentLocation;
 
-    async function getLocationData(latitude, longitude, location, unit = 'metric') {
-        if (latitude && longitude) {
-            const locationRequest = new Request(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
+    async function getLocationData(options, unit = 'metric') {
+        if ('latitude' in options && 'longitude' in options) {
+            const locationRequest = new Request(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${options.latitude}&longitude=${options.longitude}&localityLanguage=en`);
             try {
                 const locationResponse = await fetch(locationRequest);
                 const locationData = await locationResponse.json();
-                location = `${locationData.city}, ${locationData.countryCode}`;
+                options.location = `${locationData.city}, ${locationData.countryCode}`;
             } catch (error) {
                 return {code: error.name, message: error.message};
             }
         }
-        currentLocation = location;
-        const request = new Request(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?unitGroup=${unit}&key=${apiKey}&contentType=json&lang=en`, {
+        currentLocation = options.location;
+        const request = new Request(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${options.location}?unitGroup=${unit}&key=${apiKey}&contentType=json&lang=en`, {
             method: 'GET',
             headers: {},
         });
